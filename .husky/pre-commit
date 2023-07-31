@@ -3,4 +3,6 @@
 
 # npm test
 #初始化 husky 工具提交代码进行检查避免提交错误代码
-pnpm lint
+# pnpm lint
+#默认进行的是全量检查，耗时问题，历史问题。
+pnpm lint-staged
