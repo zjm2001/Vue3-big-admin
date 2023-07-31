@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# npm test
+#初始化 husky 工具提交代码进行检查避免提交错误代码
+pnpm lint
