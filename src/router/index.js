@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores'
 // createRouter 创建路由实例，===> new VueRouter()
 // 1. history模式: createWebHistory()   http://xxx/user
 // 2. hash模式: createWebHashHistory()  http://xxx/#/user
@@ -14,14 +15,15 @@ const router = createRouter({
       path: '/', //进入主框架
       name: 'layout',
       component: () => import('@/views/layout/LayoutContainer.vue'),
+      redirect: '/article/channel', //跳转到这个
       children: [
-        {
-          path: '',
-          component: () => import('@/views/article/ArticleManage.vue')
-        },
         {
           path: '/article/channel',
           component: () => import('@/views/article/ArticleChannel.vue')
+        },
+        {
+          path: '/article/manage',
+          component: () => import('@/views/article/ArticleManage.vue')
         },
         {
           path: '/user/profile',
@@ -39,5 +41,9 @@ const router = createRouter({
     }
   ]
 })
-
+// 登录访问拦截(和三有区别)
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+  if (!userStore.token && to.path !== '/login') return '/login'
+})
 export default router
