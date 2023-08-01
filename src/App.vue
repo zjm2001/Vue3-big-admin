@@ -3,6 +3,10 @@ import { useUserStore } from '@/stores'
 const UserStore = useUserStore()
 </script>
 <template>
+  <hr />
+  <router-view></router-view>
+  <hr />
+  <hr />
   <h1>我是app入口组件</h1>
   <el-row class="mb-4">
     <el-button>Default</el-button>

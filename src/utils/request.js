@@ -9,7 +9,7 @@ const instance = axios.create({
   baseURL,
   timeout: 10000
 })
-
+//请求拦截器
 instance.interceptors.request.use(
   (config) => {
     // TODO 2. 携带token
@@ -21,7 +21,7 @@ instance.interceptors.request.use(
   },
   (err) => Promise.reject(err)
 )
-
+//响应拦截器
 instance.interceptors.response.use(
   (res) => {
     //判断返回是否正确正确继续返回
