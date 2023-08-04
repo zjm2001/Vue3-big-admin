@@ -1,6 +1,6 @@
 <script setup>
 import { Delete, Edit } from '@element-plus/icons-vue'
-import { artGetListService } from '@/api/article.js'
+import { artGetListService, artDelService } from '@/api/article.js'
 import ChannelSelect from './components/ChannelSelect.vue'
 import ArticleEdit from './components/ArticleEdit.vue'
 
@@ -37,8 +37,15 @@ const onEditArticle = (row) => {
   articleEditRef.value.open(row)
 }
 /**删除 */
-const onDeleteArticle = (row) => {
-  console.log(row)
+const onDeleteArticle = async (row) => {
+  await ElMessageBox.confirm('你确认删除该文章信息吗？', '温馨提示', {
+    type: 'warning',
+    confirmButtonText: '确认',
+    cancelButtonText: '取消'
+  })
+  await artDelService(row.id)
+  ElMessage({ type: 'success', message: '删除成功' })
+  getArticleList()
 }
 const onSizeChange = (size) => {
   params.value.pagenum = 1
@@ -58,6 +65,16 @@ const onReset = () => {
   params.value.pagenum = 1
   params.value.cate_id = ''
   params.value.state = ''
+  getArticleList()
+}
+//监听子组件添加或者是修改
+// 添加修改成功
+const onSuccess = (type) => {
+  if (type === 'add') {
+    // 如果是添加，需要跳转渲染最后一页，编辑直接渲染当前页
+    const lastPage = Math.ceil((total.value + 1) / params.value.pagesize) //得到最后一页 是添加就跳转到最后一页
+    params.value.pagenum = lastPage
+  }
   getArticleList()
 }
 </script>
@@ -116,5 +133,5 @@ const onReset = () => {
       style="margin-top: 20px; justify-content: flex-end"
     />
   </page-container>
-  <ArticleEdit ref="articleEditRef"></ArticleEdit>
+  <ArticleEdit ref="articleEditRef" @success="onSuccess"></ArticleEdit>
 </template>
