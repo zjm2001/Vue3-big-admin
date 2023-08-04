@@ -2,35 +2,69 @@
 import { Delete, Edit } from '@element-plus/icons-vue'
 import { artGetListService } from '@/api/article.js'
 import ChannelSelect from './components/ChannelSelect.vue'
+import ArticleEdit from './components/ArticleEdit.vue'
+
 import { formatTime } from '@/utils/format'
 import { ref } from 'vue'
 // 假数据
 const articleList = ref([])
 const total = ref(0)
+const loading = ref(false)
 const params = ref({
   pagenum: 1,
   pagesize: 3,
   cate_id: '',
   state: ''
 })
+/**获取数据渲染 */
 const getArticleList = async () => {
+  loading.value = true
   const res = await artGetListService(params.value)
-  console.log(res)
+  // console.log(res)
   articleList.value = res.data.data
   total.value = res.data.total
+  loading.value = false
 }
 getArticleList()
-const onEditArticle = (row) => {
-  console.log(row)
+// const visibleDrawer = ref(false) //抽屉弹层控制
+const articleEditRef = ref() //弹层组件对象
+/**点击新增文章 */
+const onAddArticle = () => {
+  articleEditRef.value.open({})
 }
+/**修改 */
+const onEditArticle = (row) => {
+  articleEditRef.value.open(row)
+}
+/**删除 */
 const onDeleteArticle = (row) => {
   console.log(row)
+}
+const onSizeChange = (size) => {
+  params.value.pagenum = 1
+  params.value.pagesize = size
+  getArticleList()
+}
+const onCurrentChange = (page) => {
+  params.value.pagenum = page
+  getArticleList()
+}
+/**搜索和重置 */
+const onSearch = () => {
+  params.value.pagenum = 1
+  getArticleList()
+}
+const onReset = () => {
+  params.value.pagenum = 1
+  params.value.cate_id = ''
+  params.value.state = ''
+  getArticleList()
 }
 </script>
 <template>
   <page-container title="文章管理">
     <template #extra>
-      <el-button type="primary">发布文章</el-button>
+      <el-button type="primary" @click="onAddArticle">发布文章</el-button>
     </template>
     <el-form inline>
       <el-form-item label="文章分类：">
@@ -43,11 +77,11 @@ const onDeleteArticle = (row) => {
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">搜索</el-button>
-        <el-button>重置</el-button>
+        <el-button @click="onSearch" type="primary">搜索</el-button>
+        <el-button @click="onReset">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="articleList">
+    <el-table :data="articleList" v-loading="loading">
       <el-table-column label="文章标题" prop="title">
         <template #default="{ row }">
           <el-link type="primary" :underline="false">{{ row.title }}</el-link>
@@ -70,18 +104,17 @@ const onDeleteArticle = (row) => {
         <el-empty description="没有数据" />
       </template>
     </el-table>
-    <!-- <el-pagination
-      v-model:current-page="currentPage4"
-      v-model:page-size="pageSize4"
-      :page-sizes="[100, 200, 300, 400]"
-      :small="small"
-      :disabled="disabled"
-      :background="background"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
+    <el-pagination
+      v-model:current-page="params.pagenum"
+      v-model:page-size="params.pagesize"
+      :page-sizes="[2, 3, 4, 5, 10]"
+      layout="jumper, total, sizes, prev, pager, next"
+      background
+      :total="total"
+      @size-change="onSizeChange"
+      @current-change="onCurrentChange"
       style="margin-top: 20px; justify-content: flex-end"
-    /> -->
+    />
   </page-container>
+  <ArticleEdit ref="articleEditRef"></ArticleEdit>
 </template>

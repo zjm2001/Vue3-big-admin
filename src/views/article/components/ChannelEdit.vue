@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref } from 'vue'
 import { artAddChannelService, artEditChannelService } from '@/api/article.js'
 const dialogVisible = ref(false)
 const emit = defineEmits(['success'])
